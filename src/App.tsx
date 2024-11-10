@@ -1,10 +1,17 @@
 import React from 'react';
+import TodoList from './containers/TodoList/TodoList.tsx';
+import Navbar from './components/Navbar/Navbar.tsx';
 
 const App = () => {
   return (
-    <div>
-
-    </div>
+    <>
+      <header>
+        <Navbar />
+      </header>
+      <main>
+        <TodoList/>
+      </main>
+    </>
   );
 };
 
