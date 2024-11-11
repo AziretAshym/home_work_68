@@ -48,6 +48,12 @@ export const switchTodo = createAsyncThunk<Task, string>('todos/switchTodo', asy
 });
 
 
+export const deleteTodo = createAsyncThunk<string, string>('todos/deleteTodo', async (id) => {
+  await axiosAPI.delete(`/todos/${id}.json`);
+  return id;
+});
+
+
 
 const todosSlice:Slice<TaskState> = createSlice({
   name: 'todos',
@@ -85,7 +91,13 @@ const todosSlice:Slice<TaskState> = createSlice({
       })
       .addCase(switchTodo.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to toggle todo';
-      });
+      })
+      .addCase(deleteTodo.fulfilled, (state, action: PayloadAction<string>) => {
+        state.items = state.items.filter((todo) => todo.id !== action.payload);
+      })
+      .addCase(deleteTodo.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to delete todo';
+      })
   },
 });
 

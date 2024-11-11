@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../api/store';
-import { selectTodos, fetchList, addTodo,switchTodo } from './todoListSlice';
+import { selectTodos, fetchList, addTodo, switchTodo, deleteTodo } from './todoListSlice';
 
 const TodosList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const [text, setText] = useState('');
+
 
   useEffect(() => {
     dispatch(fetchList());
@@ -23,6 +24,10 @@ const TodosList: React.FC = () => {
 
   const onSwitchTodo = (id: string) => {
     dispatch(switchTodo(id));
+  };
+
+  const onDeleteTodo = (id: string) => {
+    dispatch(deleteTodo(id));
   };
 
   return (
@@ -43,6 +48,7 @@ const TodosList: React.FC = () => {
             </button>
           </div>
 
+
             <ul className="list-group w-50 mx-auto">
             {todos.slice().reverse().map((todo) => (
               <li key={todo.id}
@@ -52,15 +58,21 @@ const TodosList: React.FC = () => {
                   {todo.text}
                 </span>
 
-                <input
-                  type="checkbox"
-                  checked={todo.done}
-                  onChange={() => onSwitchTodo(todo.id)}
-                  className="form-check-input me-2"
-                />
+                <div className="d-flex flex-column align-items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={todo.done}
+                    onChange={() => onSwitchTodo(todo.id)}
+                    className="form-check-input me-2"
+                  />
+
+                  <button className="btn btn-danger btn-sm" onClick={() => onDeleteTodo(todo.id)}>
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
-          </ul>
+            </ul>
         </div>
       </div>
     </div>
