@@ -5,6 +5,7 @@ import { RootState } from '../../api/store';
 interface Task {
   id: string;
   text: string;
+  done: boolean
 }
 
 
@@ -37,6 +38,16 @@ export const addTodo = createAsyncThunk<Task, string>('todos/addTodo', async (te
 );
 
 
+export const switchTodo = createAsyncThunk<Task, string>('todos/switchTodo', async (id) => {
+  const response = await axiosAPI.get(`/todos/${id}.json`);
+  const todo = response.data;
+  const updatedTodo = { ...todo, done: !todo.done };
+
+  await axiosAPI.put(`/todos/${id}.json`, updatedTodo);
+  return { ...updatedTodo, id };
+});
+
+
 
 const todosSlice:Slice<TaskState> = createSlice({
   name: 'todos',
@@ -63,6 +74,17 @@ const todosSlice:Slice<TaskState> = createSlice({
       })
       .addCase(addTodo.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to add todo';
+      })
+
+
+      .addCase(switchTodo.fulfilled, (state, action: PayloadAction<Task>) => {
+        const index = state.items.findIndex(todo => todo.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+      })
+      .addCase(switchTodo.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to toggle todo';
       });
   },
 });
